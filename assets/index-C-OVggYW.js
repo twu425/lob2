@@ -42288,6 +42288,8 @@ class yF extends Al {
       i.on("pointerup", (s) => this.onPointerUp(s)),
       i.on("pointerupoutside", (s) => this.onPointerUp(s));
   }
+
+  // TODO: FIgure this out
   loadPlayerOrders() {
     const { multiTurnOrders: t } = s0.getInstance().getUserSettings();
     t &&
@@ -48591,6 +48593,7 @@ var gt = ((n) => (
   n
 ))(gt || {});
 const Sv = 75;
+
 class K9 {
   constructor(e, t) {
     P(this, "team");
@@ -48616,11 +48619,16 @@ class K9 {
       (this.playerNumber = t),
       (this.team = this.game.getPlayerTeam(this.playerNumber));
   }
+
+  // TODO: Play functionality
+    // it seems like these constants hold the unit positions
   play() {
     const e = this.getMyUnits(),
       t = this.getEnemyUnits(),
       i = [];
+    //console.log(e);
     if (t.length === 0) return i;
+    // Swapping e and t here results in commands being sent for the player
     (this.allyGroups = this.formGroups(e)),
       (this.enemyGroups = this.formGroups(t));
     for (const s of this.allyGroups)
@@ -48643,6 +48651,7 @@ class K9 {
   getEnemyUnits() {
     return this.game.getUnits().filter((e) => e.team !== this.team);
   }
+  // TODO: BOT commands are formed using these process methods
   processInfantryGroup(e, t) {
     if (e.size === 0) return;
     const i = e.getCenter(),
@@ -48816,8 +48825,11 @@ class il extends JC {
     this.game = t;
   }
   async joinGame() {}
+
+    // TODO:
   async executeTurn() {
     const { game: t } = this;
+    //TODO: This is probably points to where gamestate is held
     t.updateSpatialGrid(t.getUnits()), this.playBots();
     const i = t.getTurnStatus();
     t.handleTurnStatus(i),
@@ -48907,6 +48919,7 @@ class il extends JC {
   }
 
   // TODO: FIGURE THIS OUT
+    // bot orders may be held in bots variable?
   playBots() {
     for (const t of this.bots.values())
       this.game.submitOrders(t.playerNumber, t.play());
@@ -48920,12 +48933,15 @@ class il extends JC {
     const t = this.getCurrentHumanPlayer();
     return t !== null && (this.userId = t), t;
   }
+
   setupBots(t) {
     t == null ||
       t.forEach((i) => {
         i.type === gn.Bot && this.addBot(i.player);
       });
   }
+
+  //TODO:
   handleOrdersSubmitted(t, i) {
     const { game: s, orderMaker: r } = t;
     this.setCurrentHumanPlayer(),
@@ -72087,6 +72103,7 @@ class LP extends IC {
       return r && r.player === t;
     });
   }
+  // TODO: how are orders stored?
   submitOrders(t, i) {
     const s = this.getPlayer(t);
     if (!s) throw new Error("Player not found");
