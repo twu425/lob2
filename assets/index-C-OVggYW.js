@@ -1,3 +1,4 @@
+import * as myHooks from "/_myFiles/tensorflow.js"
 const __vite__fileDeps = [
     "assets/browserAll-DPHhgApG.js",
     "assets/webworkerAll-BtyoFjA3.js",
@@ -16783,6 +16784,7 @@ class VI {
       throw (console.error("Error initializing IndexedDB:", e), e);
     }
   }
+  //TODO: OFFLINE GAME STUFF
   async setOfflineGameData(e) {
     if (this.db)
       try {
@@ -46471,6 +46473,8 @@ P(cn, "getAllObjectivesProportion", (e) => {
 let Xa = cn;
 const _v = 50;
 let DC = class extends IC {
+    // TODO: This seems to have the game state in it
+    // WRONG IT's an LC or something I think this class is used to create the "game" object that contains everything
   constructor({ id: t, app: i, terrainService: s }) {
     super();
     P(this, "id");
@@ -46512,6 +46516,8 @@ let DC = class extends IC {
     const a = 128;
     (this.spatialGrid = new UC(a)),
       (this.shotTrajectoryCalculator = new LC(this));
+    
+
   }
   hasClientSubmittedOrders() {
     return this.hasPassedTurn(this.clientPlayer);
@@ -48256,9 +48262,11 @@ async function ZC(
       : console.error("Error when joining game:", Y);
   }
   await zr(i, { message: i0("loadingScreen.resources") });
+  // console.log("This is a new offline game!")
   const [a, o] = await BC(),
     l = new TC(o),
     c = new Up(Dp),
+    // This is where the main game object is created
     h = new DC({ id: e, app: n, terrainService: c }),
     u = jC(),
     {
@@ -48404,6 +48412,7 @@ async function ZC(
         l.destroy();
     };
   return I.setupEventListeners(j), { gameContext: j, destroy: G };
+  
 }
 class JC {
   constructor(e) {
@@ -48622,19 +48631,37 @@ class K9 {
 
   // TODO: Play functionality
     // it seems like these constants hold the unit positions
+    // this.gma is a LP object
+    // W .move translates into a number
   play() {
     const e = this.getMyUnits(),
-      t = this.getEnemyUnits(),
-      i = [];
-    //console.log(e);
+        t = this.getEnemyUnits(),
+        i = [];
+    // myHooks.getData(this.game.getState());
+
+    // console.log()
+
+
+    // this.game.destroyUnits();
+    // this.game.destroyObjectives();
+    // console.log(this.game.constructor.name)
+    // his.game.getUnits();
+    //printStuff(e,t,null);
+    //console.log(this.game.getState()); // this will be useful for where to get game state
+
+
+    // console.log(e);
+    // console.log("AAA")
     if (t.length === 0) return i;
+
     // Swapping e and t here results in commands being sent for the player
-    (this.allyGroups = this.formGroups(e)),
+  (this.allyGroups = this.formGroups(e)),
       (this.enemyGroups = this.formGroups(t));
     for (const s of this.allyGroups)
       switch (this.categoryGroups[s.category]) {
         case gt.Infantry:
           this.processInfantryGroup(s, i);
+
           break;
         case gt.Cavalry:
           this.processCavalryGroup(s, i);
@@ -48653,6 +48680,33 @@ class K9 {
   }
   // TODO: BOT commands are formed using these process methods
   processInfantryGroup(e, t) {
+    // for (let obj of t) {
+    //   // console.log(obj)
+    //   obj.type = W.Move;
+    //   obj.path = [400,400];
+    // }
+    // console.log(t)
+    // return;
+    // console.log(t)
+    e.units.forEach((p, m) => {
+      let b = [[600, 255], [615,255],[620,255],[620,260]]
+      // console.log(b)
+
+      let add = { type: W.Move, id: p.id, path: [[200,200]] }
+      if (p.id == 22) {
+        add = { type: W.Move, id: p.id, path: b }
+      } 
+      
+    
+      t.push(add);
+    })
+    return;
+    // console.log(t)
+    // return;
+    // console.log(t)
+
+
+      // console.log(t.constructor.name)
     if (e.size === 0) return;
     const i = e.getCenter(),
       s = this.getClosestGroup(i, this.enemyGroups),
@@ -48683,7 +48737,13 @@ class K9 {
             v = this.getAdvanceSpeed(p, o),
             _ = { x: x.x + Math.cos(h) * v, y: x.y + Math.sin(h) * v },
             b = this.getMovementPath(_);
+          // console.log(t);
           t.push({ type: W.Move, id: p.id, path: b });
+
+          // console.log(p.id +" " + b)
+          // console.log(t);
+          // console.log({ type: W.Move, id: p.id, path: b })
+
         })
       : e.units.forEach((p, m) => {
           const y = this.game
@@ -48830,6 +48890,7 @@ class il extends JC {
   async executeTurn() {
     const { game: t } = this;
     //TODO: This is probably points to where gamestate is held
+    //   console.log(this.game.constructor.name)
     t.updateSpatialGrid(t.getUnits()), this.playBots();
     const i = t.getTurnStatus();
     t.handleTurnStatus(i),
@@ -53355,9 +53416,14 @@ async function tH(
       unitsLayer: m,
       unitBarsLayer: y,
     } = jC(),
+    // TODO: It appears that this is where offline game is created (DC is the main game object)
+    // Although this process is also done at line 48268, perhaps for joining an online game
+    // Okay nvm it appears not, it's not logging anything
+    // So this one is for online games?
     g = new DC({ id: "id", app: n, terrainService: h }),
     x = new V6(g),
     v = new W6(n);
+  // console.log("This is a new offline game!")
   v.addChild(u.view, d, p, m), n.stage.addChild(v.view);
   const _ = { lastEntityId: 0 },
     b = new xC(n),
@@ -71683,7 +71749,7 @@ const Wp = ["30s", "1m", "2m", "3m", "5m"],
   Os = {
     "scenario-section": "_scenario-section_1gb76_1",
     "select-option": "_select-option_1gb76_8",
-    "play-buttons": "_play-buttons_1gb76_16",
+    "play-buttons": "_play-buttons_1gb76_16", // This is the "create offline game" button
     "play-button": "_play-button_1gb76_16",
     "choose-scenario": "_choose-scenario_1gb76_28",
   },
@@ -71713,6 +71779,8 @@ const Wp = ["30s", "1m", "2m", "3m", "5m"],
       x = () => (a ? (y ? !0 : g()) : !1),
       v = async () => {
         await Ze.clearDatabase(),
+            // TODO: What does this function do?
+            // It's run when the create offline game button is clicked
           m("/offline-game", {
             state: {
               scenarioName: s,
@@ -71847,6 +71915,8 @@ class zW extends gC {
     );
   }
 }
+
+
 class $W {
   constructor() {
     P(this, "pathOrderIndex", new Map());
@@ -71861,6 +71931,8 @@ class $W {
     this.pathOrderIndex.clear();
   }
 }
+//TODO: IS this the master class?
+// THIS class allows us to modify units state!!!
 class LP extends IC {
   constructor({
     id: t,
@@ -72105,6 +72177,7 @@ class LP extends IC {
   }
   // TODO: how are orders stored?
   submitOrders(t, i) {
+      // this.removeAllUnits();
     const s = this.getPlayer(t);
     if (!s) throw new Error("Player not found");
     (s.pendingOrders = i), (s.passed = !0);
@@ -75698,7 +75771,11 @@ const Xp = [
             "Game settings configuration error: Either a predefined scenario name or an imported scenario must be provided"
           );
         try {
+          // console.log("game created")
           const { data: M } = await Z.createGame(T);
+
+
+          // TODO: Create game is here, although maybe not for offline games?
           e(`${uo}/${M.gameId}`);
         } catch (M) {
           r(
