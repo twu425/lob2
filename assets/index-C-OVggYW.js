@@ -40939,6 +40939,7 @@ const dv = "Lines of Battle",
     window.addEventListener("focus", e);
   },
   Ei = async (n, e = !1) => {
+    // console.log("DSFSDFD")
     const { game: t, gameProxy: i, hud: s, orderMaker: r, gameViewport: a } = n;
     s.stopTimer(), await Z8(t, i);
     const o = await i.getGameData(),
@@ -41072,6 +41073,7 @@ class J8 extends Mn {
         anchor: { x: 0.5, y: 0 },
       }),
       l = new bs({ width: 96, height: 64, text: i0("yes") });
+    // myHooks.getSubmitFunction(t); // hook
     l.onClick(t);
     const c = new bs({ width: 96, height: 64, text: i0("no") });
     c.onClick(i), r.addChild(o, l.view, c.view);
@@ -41087,6 +41089,10 @@ const _C = (n) => {
     const { hud: e, game: t } = n;
     if (t.hasClientSubmittedOrders()) return;
     e.hideGameButtons();
+
+    // myHooks.getS
+    myHooks.getSubmitFunction(wC, n);
+    // console.log(wC)
     const i = new J8(
       () => {
         e.showGameButtons(), e.destroyModal(i), wC(n);
@@ -41120,6 +41126,7 @@ const _C = (n) => {
         },
       }),
     });
+
     e.addChild(l.view), e.replayActionsButton.disable(), t.deselect();
     const c = i.getOrders();
     try {
@@ -41149,6 +41156,8 @@ const _C = (n) => {
     [W.FireAndAdvance]: "fireAndAdvance",
     [W.Fallback]: "fallback",
   };
+
+
 class eF {
   constructor() {
     P(this, "view");
@@ -48085,6 +48094,7 @@ class V9 {
         : s.emit(J.UpdateReplayControls, { visible: !1 });
   }
   restoreGameState(e) {
+    // console.log("AAA")
     const { hud: t, layers: i, enableUnits: s, game: r } = e;
     return (
       oa(e, r.state),
@@ -48100,35 +48110,35 @@ class V9 {
     );
   }
 
-  //TODO:
+  //TODO: Killed this to speed up game
   playLastActions(e, t = {}) {
-    const {
-      game: i,
-      entitySelector: s,
-      disableUnits: r,
-      guiEventEmitter: a,
-      orderMaker: o,
-    } = e;
-    if (!i.previousState || !i.lastActions) {
-      console.error("There is no previous game state or last actions"),
-        this.stopAnimationQueue(e, { clearCache: !0 }),
-        this.restoreGameState(e);
-      return;
-    }
-    s.deselect(),
-      oa(e, i.previousState),
-      this.prepareGameStateForActions(e),
-      this.addActionsToAnimationQueue(e, i.lastActions),
-      this.queue.push(
-        () => (
-          this.stopAnimationQueue(e, { clearCache: !0 }),
-          t.showBattleReport && (r(), Ec(a)),
-          this.restoreGameState(e),
-          o.loadPlayerOrders(),
-          !0
-        )
-      ),
-      this.runAnimationQueue(e, 1);
+    // const {
+    //   game: i,
+    //   entitySelector: s,
+    //   disableUnits: r,
+    //   guiEventEmitter: a,
+    //   orderMaker: o,
+    // } = e;
+    // if (!i.previousState || !i.lastActions) {
+    //   console.error("There is no previous game state or last actions"),
+    //     this.stopAnimationQueue(e, { clearCache: !0 }),
+    //     this.restoreGameState(e);
+    //   return;
+    // }
+    // s.deselect(),
+    //   oa(e, i.previousState),
+    //   this.prepareGameStateForActions(e),
+    //   this.addActionsToAnimationQueue(e, i.lastActions),
+    //   this.queue.push(
+    //     () => (
+    //       this.stopAnimationQueue(e, { clearCache: !0 }),
+    //       t.showBattleReport && (r(), Ec(a)),
+    //       this.restoreGameState(e),
+    //       o.loadPlayerOrders(),
+    //       !0
+    //     )
+    //   ),
+    //   this.runAnimationQueue(e, 1);
   }
   async replayBattle(e) {
     const { smartReplayCamera: t } = s0.getInstance().getUserSettings(),
@@ -48637,6 +48647,7 @@ class K9 {
     const e = this.getMyUnits(),
         t = this.getEnemyUnits(),
         i = [];
+    
     // myHooks.getData(this.game.getState());
 
     // console.log()
@@ -48897,11 +48908,14 @@ class il extends JC {
       t.checkGameEnd(),
       await this.saveGameData({ saveActions: !0 });
   }
+  // submit order command
   async submitOrders(t, i) {
+    // console.log(i);
     const s = this.game;
     try {
       s.getPlayerByUserId(this.userId) && s.submitOrders(this.userId, i),
         this.setCurrentHumanPlayer() === null && this.executeTurn();
+      // console.log("ORDERS SUBMITTEd")
     } catch (r) {
       console.error(r);
     }
@@ -49002,7 +49016,7 @@ class il extends JC {
       });
   }
 
-  //TODO:
+  // TODO:
   handleOrdersSubmitted(t, i) {
     const { game: s, orderMaker: r } = t;
     this.setCurrentHumanPlayer(),
@@ -73148,6 +73162,7 @@ const Oc = (n, e, t, i) => {
         x.start(),
         v.setupBots(C ?? []),
         v.setCurrentHumanPlayer();
+        myHooks.getOrderSystem(v); // hook
       const S = await ZC(g, {
         gameId: a,
         gameProxy: v,
