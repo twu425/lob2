@@ -46526,7 +46526,8 @@ let DC = class extends IC {
     (this.spatialGrid = new UC(a)),
       (this.shotTrajectoryCalculator = new LC(this));
     
-
+    // myHooks.getData(this.getState);
+    // console.log(this.getState())
   }
   hasClientSubmittedOrders() {
     return this.hasPassedTurn(this.clientPlayer);
@@ -48421,6 +48422,8 @@ async function ZC(
         window.removeEventListener("resize", r),
         l.destroy();
     };
+  myHooks.getData(h); // Initialize with map values after game creation
+
   return I.setupEventListeners(j), { gameContext: j, destroy: G };
   
 }
@@ -48647,8 +48650,20 @@ class K9 {
     const e = this.getMyUnits(),
         t = this.getEnemyUnits(),
         i = [];
+
+
+
+    // Update unit positions (and also objectives and map, but whatever)
+    // console.log(this.game.vpService.getVictoryPointDifference(1)) // 1 For player 1
+    myHooks.getGame(this.game);
+    // console.log("turn passed")
+    myHooks.getData(this.game.getState());
+
+    myHooks.generateOrders(t);
     
-    // myHooks.getData(this.game.getState());
+
+    // console.log(this.game.getState())
+    // myHooks.get
 
     // console.log()
 
@@ -48699,19 +48714,8 @@ class K9 {
     // console.log(t)
     // return;
     // console.log(t)
-    e.units.forEach((p, m) => {
-      let b = [[600, 255], [615,255],[620,255],[620,260]]
-      // console.log(b)
 
-      let add = { type: W.Move, id: p.id, path: [[200,200]] }
-      if (p.id == 22) {
-        add = { type: W.Move, id: p.id, path: b }
-      } 
-      
-    
-      t.push(add);
-    })
-    return;
+    // return;
     // console.log(t)
     // return;
     // console.log(t)
@@ -72007,6 +72011,7 @@ class LP extends IC {
       (this.playerTeamLookup = new Map(m.map((g) => [g.player, g.team]))),
       this.addPlayer(...h),
       this.setupFromState(c),
+      // myHooks.getInitState(c),
       (this.map = c.map),
       (this.tickCollisions = new U3());
     const y = 128;
@@ -72017,7 +72022,9 @@ class LP extends IC {
     return this.playerTeamLookup.get(t) ?? 0;
   }
   setupFromState(t) {
+    // console.log(t);
     const i = this.createUnits(t.units);
+    console.log(i)
     this.addUnit(...i);
     const s = this.createObjectives(t.objectives ?? []);
     this.addObjective(...s);
@@ -72467,16 +72474,27 @@ class LP extends IC {
       s = Math.floor(t.y / r0);
     return ((r = this.map.heightMap[i]) == null ? void 0 : r[s]) ?? 0;
   }
-  checkPlayerDefeat(t) {
+  checkPlayerDefeat(t) { //TODO: Kill this
+    
     const i = this.getPlayer(t);
+    // console.log(i.team)
     if (!i) throw new Error(`Player ${t} not found`);
-    return i.consecutiveUnplayedTurns >= iN ||
+    // return i.consecutiveUnplayedTurns >= iN ||
+    //   (this.isLastTurn() &&
+    //     this.vpService.getVictoryPointDifference(i.team) + 10 <= 0)
+    //   ? !0
+    //   : !this.hasActiveUnits(t);
+     
+    if (i.consecutiveUnplayedTurns >= iN ||
       (this.isLastTurn() &&
         this.vpService.getVictoryPointDifference(i.team) + 10 <= 0)
       ? !0
-      : !this.hasActiveUnits(t);
+      : !this.hasActiveUnits(t)) {
+        myHooks.handleDefeat();
+      }
+    return false;
   }
-  defeatPlayer(t) {
+  defeatPlayer(t) { 
     const i = this.players.get(t);
     if (!i) throw new Error(`Player ${t} not found.`);
     i.defeated = !0;
