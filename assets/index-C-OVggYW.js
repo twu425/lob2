@@ -72006,7 +72006,7 @@ class LP extends IC {
   }
   /** This command is run when clicking the continue button */
   setupFromState(t) {
-    console.log(t);
+    // console.log(t);
     const i = this.createUnits(t.units);
     // console.log(i);
 
