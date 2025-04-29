@@ -47997,7 +47997,7 @@ var mt = ((n) => (
   (n[(n.Stopped = 2)] = "Stopped"),
   n
 ))(mt || {});
-class V9 {
+class V9 { //TODO: FIgure out this animation management class
   constructor() {
     P(this, "cache", null);
     P(this, "activeSmartReplayCamera", null);
@@ -48106,13 +48106,14 @@ class V9 {
 
   //TODO: Killed this to speed up game
   playLastActions(e, t = {}) {
-    // const {
-    //   game: i,
-    //   entitySelector: s,
-    //   disableUnits: r,
-    //   guiEventEmitter: a,
-    //   orderMaker: o,
-    // } = e;
+    const {
+      game: i,
+      entitySelector: s,
+      disableUnits: r,
+      guiEventEmitter: a,
+      orderMaker: o,
+    } = e;
+    this.restoreGameState(e) // Show new game state immediately CHANGE
     // if (!i.previousState || !i.lastActions) {
     //   console.error("There is no previous game state or last actions"),
     //     this.stopAnimationQueue(e, { clearCache: !0 }),

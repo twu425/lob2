@@ -13521,12 +13521,13 @@ function gameLoop() {
 
     // console.log(running);
     console.log(game.turnNumber);
-    if (game.turnNumber == game.maxTurn - 1 ) {
+    if (game.turnNumber == game.maxTurn - 1) {
         game.turnNumber = 1;
         game.setupFromState(exampleState);
     }
 
     // game.executeTurn();
+    // clientGame.submitOrders(param);
     submitFunction(param);
     console.log(param);
 
