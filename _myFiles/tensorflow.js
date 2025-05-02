@@ -1,5 +1,5 @@
-import { exampleState } from "/_myFiles/demoStates.js";
-import { exampleUnit } from "/_myFiles/demoStates.js";
+import { exampleState } from "/_myFiles/tensorflow.js";
+import { exampleUnit } from "/_myFiles/tensorflow.js";
 
 let mapData;
 let units;
