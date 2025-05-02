@@ -1,5 +1,5 @@
-import { exampleState } from "./demoStates";
-import { exampleUnit } from "./demoStates";
+import { exampleState } from "/_myFiles/demoStates.js";
+import { exampleUnit } from "/_myFiles/demoStates.js";
 
 let mapData;
 let units;
@@ -44,7 +44,7 @@ export function handleDefeat() {
     game.setupFromState(exampleState);
 }
 
-function resetGame() { 
+function resetGame() {
     game.turnNumber = 1;
     game.setupFromState(exampleState);
 }
@@ -74,6 +74,7 @@ function gameLoop() {
     if (game.turnNumber == game.maxTurn - 1) {
         resetGame();
     }
+    // console.log(game.orderSystem.)
 
     // game.executeTurn();
     // clientGame.submitOrders(param);
@@ -85,7 +86,7 @@ function gameLoop() {
 
     // Schedule the next loop
     // Necessary to use this instead of calling directly because it allows the call stack to to clear
-    setTimeout(gameLoop, 0); 
+    setTimeout(gameLoop, 0);
 }
 
 function start() {

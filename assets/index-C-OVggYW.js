@@ -41066,7 +41066,6 @@ class J8 extends Mn {
         anchor: { x: 0.5, y: 0 },
       }),
       l = new bs({ width: 96, height: 64, text: i0("yes") });
-    // myHooks.getSubmitFunction(t); // hook
     l.onClick(t);
     const c = new bs({ width: 96, height: 64, text: i0("no") });
     c.onClick(i), r.addChild(o, l.view, c.view);
@@ -48889,6 +48888,7 @@ class il extends JC {
 
   // TODO:
   async executeTurn() {
+    // console.log("turn")
     const { game: t } = this;
     //TODO: This is probably points to where gamestate is held
     //   console.log(this.game.constructor.name)
@@ -48900,7 +48900,7 @@ class il extends JC {
   }
   // submit order command
   async submitOrders(t, i) {
-    // console.log(i);
+    console.log(i);
     const s = this.game;
     try {
       s.getPlayerByUserId(this.userId) && s.submitOrders(this.userId, i),
