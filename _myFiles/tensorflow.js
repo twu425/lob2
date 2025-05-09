@@ -1,5 +1,5 @@
 import { exampleState } from "/_myFiles/demoStates.js";
-import { exampleUnit } from "/_myFiles/demoStates.js";
+// import { exampleUnit } from "/_myFiles/demoStates.js";
 
 let mapData;
 let units;
@@ -10,18 +10,29 @@ let playerNumber = 1;
 
 let game; // Object, LP, contains and can modify game state
 let clientGame
-let initUnits;
+let initUnits;  
 
 
+let maxTurn;
+let turnNumber;
+let terrains;
+let heightMap;
 
 /** Update game state with client-side game object */
-export function getData(clientGameData) {
+export function getClientData(clientGameData) {
     clientGame = clientGameData;
-    let state = clientGame.getState(); // Object, DC, shows game state
+    // let state = clientGame.getState(); // Object, DC, shows game state
+}
 
-    mapData = state.map;
+function processState() {
+    let state = clientGame.getState(); // Object, DC, shows game state
+    // All of these are stored as a map
+    heightMap = state.map.heightMap;
+    terrains = state.map.terrains;
     units = state.units;
     objectives = state.objectives;
+    maxTurn = state.maxTurn;
+    turnNumber = state.turnNumber;
 }
 
 /** Retrieve the main game object */
@@ -49,6 +60,9 @@ function resetGame() {
     game.setupFromState(exampleState);
 }
 
+
+
+
 let submitFunction;
 let param;
 export function getSubmitFunction(submitFunction1, param1) {
@@ -58,7 +72,12 @@ export function getSubmitFunction(submitFunction1, param1) {
     // submitFunction(param);
 }
 
+// Orders
+// type: 1-? move, fire, etc.
+// id: int unit id
+// path: array of up to 16 arrays representing coordinate points
 export function generateOrders(unitOrders) {
+    
     // param.orders = l
     // return unitOrders;
 }
@@ -76,10 +95,13 @@ function gameLoop() {
     }
     // console.log(game.orderSystem.)
 
+    // clientGame.submitOrders(null, []);
     // game.executeTurn();
-    // clientGame.submitOrders(param);
+    // console.log(game.unitData)
+
     submitFunction(param);
     console.log(param);
+
 
     let timeEnd = Date.now()
     console.log("Time elapsed" + (timeEnd - timeStart))
@@ -105,11 +127,7 @@ window.run = run;
 
 
 function test1() {
-    console.log(game.units)
-    game.units.clear();
-    game.setupFromState(exampleState);
-    console.log(exampleState.units)
-
+    console.log(game.unitData)
 }
 
 function test2() {

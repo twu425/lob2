@@ -48647,7 +48647,7 @@ class K9 {
     // myHooks.getGame(this.game);
     // console.log("turn passed")
 
-    myHooks.getData(this.game);
+    myHooks.getClientData(this.game);
 
     myHooks.generateOrders(t);
 
@@ -48900,7 +48900,7 @@ class il extends JC {
   }
   // submit order command
   async submitOrders(t, i) {
-    console.log(i);
+    // console.log(i);
     const s = this.game;
     try {
       s.getPlayerByUserId(this.userId) && s.submitOrders(this.userId, i),
