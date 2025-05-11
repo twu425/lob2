@@ -1,8 +1,9 @@
 import { exampleState } from "/_myFiles/demoStates.js";
+// import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
 // import { exampleUnit } from "/_myFiles/demoStates.js";
 
 let mapData;
-let units;
+// let units;
 let objectives;
 
 let vpDifference = 0;
@@ -25,14 +26,54 @@ export function getClientData(clientGameData) {
 }
 
 function processState() {
-    let state = clientGame.getState(); // Object, DC, shows game state
+    // console.log(tf)
+    // let state = clientGame.units; // Object, DC, shows game state
     // All of these are stored as a map
-    heightMap = state.map.heightMap;
-    terrains = state.map.terrains;
-    units = state.units;
-    objectives = state.objectives;
-    maxTurn = state.maxTurn;
-    turnNumber = state.turnNumber;
+    heightMap = clientGame.getState().map.heightMap; // 88*72 array
+    terrains = clientGame.getState().map.terrains;
+    
+    let unitsData = new Array(100);
+    unitsData.fill(new Array(10).fill(0))
+    // console.log(clientGame.units);
+    for (const [key, unit] of clientGame.units) {
+        let unitData = [unit.gold, unit.manpower, unit.team, unit.hp, unit.org,  unit.status,
+            unit.position.x, unit.position.y, unit.rotation, unit.accumulatedMovement]; // ignore effects for now
+        // console.log(unitData);
+        unitsData[unit.id] = unitData;
+    }
+    // unitsData = unitsData.map(x => (x === undefined ? 0 : x)); // fill empty array positions with zeroes
+    
+    
+
+    const unitsTensor = tf.tensor2d(unitsData).flatten();        // Shape: [1000] (100 * 10)
+    const heightMapTensor = tf.tensor2d(heightMap).flatten();    // Shape: [6336] (88 * 72)
+    const terrainsTensor = tf.tensor2d(terrains).flatten();      // Shape: [6336] (88 * 72)
+
+    // Concatenate along the first axis (1D)
+    const inputTensor = tf.concat([unitsTensor, heightMapTensor, terrainsTensor]);
+
+    console.log(inputTensor);  // Should print [13672]
+    inputTensor.print();
+
+
+    // effects
+    // hp
+    // position
+    // org
+    // id
+    // player and team
+    // category (likely cav, inf, and arty)
+    // template (how to determine unit type? we could use gold and manpower cost I guess)
+    // effects (likely slowdown and whatnot)
+    // accumulated movement (likely charge damage)
+    // rotation
+    // velocity 
+    // status  1  = standing, 2 = routing, 3 = recovering
+    
+
+    objectives = clientGame.objectives;
+    maxTurn = clientGame.maxTurn;
+    turnNumber = clientGame.turnNumber;
 }
 
 /** Retrieve the main game object */
@@ -127,7 +168,7 @@ window.run = run;
 
 
 function test1() {
-    console.log(game.unitData)
+    processState();
 }
 
 function test2() {
