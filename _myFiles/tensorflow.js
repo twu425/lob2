@@ -23,15 +23,18 @@ let heightMap;
 
 
 
-// const socket = io("http://localhost:8000");
+const socket = io("http://localhost:8000");
 // socket.on("action", (action) => {
 //     executeAction(action);  // Implement action in the game
 // });
 
-// function sendGameState(state) {
-//     socket.emit("game_state", state);
-// }
-
+function sendGameState() {
+    socket.emit("game_state", "Message received");
+}
+socket.on('connect', function () {
+    console.log("Connected to server");
+    socket.emit('my event', { data: 'I\'m connected!' });
+});
 
 
 
@@ -189,8 +192,8 @@ function test1() {
 }
 
 function test2() {
-
-    console.log(game.getState())
+    sendGameState() 
+    // console.log(game.getState())
     // const i = this.createUnits(game.units);
     // this.addUnit(...i);
 }

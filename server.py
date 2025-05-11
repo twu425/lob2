@@ -4,10 +4,7 @@ import json
 import os
 
 app = Flask(__name__)
-socketio = SocketIO(app)
-
-
-app = Flask(__name__) 
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 @app.route('/') 
 def index(): 
@@ -24,13 +21,15 @@ def serve_file(filename):
 
 @socketio.on("game_state")
 def handle_game_state(data):
-    state = json.loads(data)
-    action = rl_algorithm(state)  # Implement your RL logic
-    socketio.emit("action", json.dumps(action))
+    print("got that state")
+    print(data)
+    # state = json.loads(data)
+    # action = rl_algorithm(state)  # Implement your RL logic
+    # socketio.emit("action", json.dumps(action))
 
-def rl_algorithm(state):
-    # Placeholder RL logic
-    return {"move": "up"}  
+# def rl_algorithm(state):
+#     # Placeholder RL logic
+#     return {"move": "up"}  
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=8000)
