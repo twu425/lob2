@@ -19,6 +19,23 @@ let turnNumber;
 let terrains;
 let heightMap;
 
+
+
+
+
+// const socket = io("http://localhost:8000");
+// socket.on("action", (action) => {
+//     executeAction(action);  // Implement action in the game
+// });
+
+// function sendGameState(state) {
+//     socket.emit("game_state", state);
+// }
+
+
+
+
+
 /** Update game state with client-side game object */
 export function getClientData(clientGameData) {
     clientGame = clientGameData;
