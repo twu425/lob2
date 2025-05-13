@@ -1,6 +1,5 @@
 import { exampleState } from "/_myFiles/demoStates.js";
-// import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
-// import { exampleUnit } from "/_myFiles/demoStates.js";
+/* global io */ 
 
 let mapData;
 // let units;
@@ -13,29 +12,25 @@ let game; // Object, LP, contains and can modify game state
 let clientGame
 let initUnits;  
 
+let id = crypto.randomUUID();;
+const socket = io("http://localhost:8000");
 
-let maxTurn;
-let turnNumber;
-let terrains;
-let heightMap;
+function sendGameState() {
+    socket.emit("game_state", {
+        id: id,
+        game_state: "Game state placeholder"
+    });
+}
 
+socket.on('connect', function () {
+    console.log("Connected to server, client id is: " + id);
+    socket.emit('client_connect', id);
+});
 
-
-
-
-// const socket = io("http://localhost:8000");
-// socket.on("action", (action) => {
-//     executeAction(action);  // Implement action in the game
-// });
-
-// function sendGameState() {
-//     socket.emit("game_state", "Message received");
-// }
-// socket.on('connect', function () {
-//     console.log("Connected to server");
-//     socket.emit('my event', { data: 'I\'m connected!' });
-// });
-
+socket.on('orders', function (data) {
+    console.log("Received orders")
+    console.log("\t" + data)
+})
 
 
 
@@ -49,8 +44,8 @@ function processState() {
     // console.log(tf)
     // let state = clientGame.units; // Object, DC, shows game state
     // All of these are stored as a map
-    heightMap = clientGame.getState().map.heightMap; // 88*72 array
-    terrains = clientGame.getState().map.terrains;
+    let heightMap = clientGame.getState().map.heightMap; // 88*72 array
+    let terrains = clientGame.getState().map.terrains;
     
     let unitsData = new Array(100);
     unitsData.fill(new Array(10).fill(0))

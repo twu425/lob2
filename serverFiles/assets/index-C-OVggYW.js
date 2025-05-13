@@ -1,4 +1,4 @@
-import * as myHooks from "/_myFiles/tensorflow.js";
+import * as myHooks from "/_myFiles/stateSender.js";
 const __vite__fileDeps = [
   "assets/browserAll-DPHhgApG.js",
   "assets/webworkerAll-BtyoFjA3.js",
