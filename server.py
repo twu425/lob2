@@ -12,8 +12,6 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 def index():
     return app.send_static_file('index.html')
 
-
-
 @socketio.on("game_state")
 def handle_game_state(data):
     print("got that state")
