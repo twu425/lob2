@@ -3,20 +3,14 @@ from flask_socketio import SocketIO
 import json
 import os
 
-app = Flask(__name__)
+# Set the flask app to serves static files from the serverFiles directory
+app = Flask(__name__, static_folder="serverFiles", static_url_path="") 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# @app.route('/') 
-# def index(): 
-#      print('hello') 
-#      return render_template('index.html')
-
-@app.route('/<path:filename>')
-def serve_file(filename):
-    # static_dir = os.path.join(os.getcwd(), '/')  # folder name
-    static_dir = os.getcwd() + "\serverFiles"   # Use the current directory as the static directory
-    print(static_dir)
-    return send_from_directory(static_dir, filename)
+# Route the index.html file
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 
 
