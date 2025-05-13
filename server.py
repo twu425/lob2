@@ -14,7 +14,8 @@ def index():
 @app.route('/<path:filename>')
 def serve_file(filename):
     # static_dir = os.path.join(os.getcwd(), '/')  # folder name
-    static_dir = os.getcwd()  # Use the current directory as the static directory
+    static_dir = os.getcwd() + "\serverFiles"   # Use the current directory as the static directory
+    print(static_dir)
     return send_from_directory(static_dir, filename)
 
 

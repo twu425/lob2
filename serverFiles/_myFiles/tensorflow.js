@@ -23,18 +23,18 @@ let heightMap;
 
 
 
-const socket = io("http://localhost:8000");
+// const socket = io("http://localhost:8000");
 // socket.on("action", (action) => {
 //     executeAction(action);  // Implement action in the game
 // });
 
-function sendGameState() {
-    socket.emit("game_state", "Message received");
-}
-socket.on('connect', function () {
-    console.log("Connected to server");
-    socket.emit('my event', { data: 'I\'m connected!' });
-});
+// function sendGameState() {
+//     socket.emit("game_state", "Message received");
+// }
+// socket.on('connect', function () {
+//     console.log("Connected to server");
+//     socket.emit('my event', { data: 'I\'m connected!' });
+// });
 
 
 
