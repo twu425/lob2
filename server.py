@@ -6,10 +6,10 @@ import os
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-@app.route('/') 
-def index(): 
-     print('hello') 
-     return render_template('index.html')
+# @app.route('/') 
+# def index(): 
+#      print('hello') 
+#      return render_template('index.html')
 
 @app.route('/<path:filename>')
 def serve_file(filename):
