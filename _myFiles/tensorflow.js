@@ -65,15 +65,15 @@ function processState() {
     
     
 
-    const unitsTensor = tf.tensor2d(unitsData).flatten();        // Shape: [1000] (100 * 10)
-    const heightMapTensor = tf.tensor2d(heightMap).flatten();    // Shape: [6336] (88 * 72)
-    const terrainsTensor = tf.tensor2d(terrains).flatten();      // Shape: [6336] (88 * 72)
+    // const unitsTensor = tf.tensor2d(unitsData).flatten();        // Shape: [1000] (100 * 10)
+    // const heightMapTensor = tf.tensor2d(heightMap).flatten();    // Shape: [6336] (88 * 72)
+    // const terrainsTensor = tf.tensor2d(terrains).flatten();      // Shape: [6336] (88 * 72)
 
-    // Concatenate along the first axis (1D)
-    const inputTensor = tf.concat([unitsTensor, heightMapTensor, terrainsTensor]);
+    // // Concatenate along the first axis (1D)
+    // const inputTensor = tf.concat([unitsTensor, heightMapTensor, terrainsTensor]);
 
-    console.log(inputTensor);  // Should print [13672]
-    inputTensor.print();
+    // console.log(inputTensor);  // Should print [13672]
+    // inputTensor.print();
 
 
     // effects
