@@ -1,2 +1,0 @@
-disable show new events modal in settings
-python -m http.server 8000
