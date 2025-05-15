@@ -12,14 +12,23 @@ let game; // Object, LP, contains and can modify game state
 let clientGame
 let initUnits;  
 
+
+let testmap = new Map([
+    ["apples", 500],
+    ["bananas", 300],
+    ["oranges", 200]
+]);
+
 let id = crypto.randomUUID();;
 const socket = io("http://localhost:8000");
 
 function sendGameState() {
+    console.log(testmap)
     socket.emit("game_state", {
         id: id,
-        game_state: "Game state placeholder"
+        game_state: [...clientGame.units] // Convert map to array so it can be sent
     });
+    // socket.emit("game_state", test);
 }
 
 socket.on('connect', function () {
@@ -29,7 +38,7 @@ socket.on('connect', function () {
 
 socket.on('orders', function (data) {
     console.log("Received orders")
-    console.log("\t" + data)
+    console.log(data)
 })
 
 
@@ -46,16 +55,20 @@ function processState() {
     // All of these are stored as a map
     let heightMap = clientGame.getState().map.heightMap; // 88*72 array
     let terrains = clientGame.getState().map.terrains;
-    
-    let unitsData = new Array(100);
-    unitsData.fill(new Array(10).fill(0))
-    // console.log(clientGame.units);
-    for (const [key, unit] of clientGame.units) {
-        let unitData = [unit.gold, unit.manpower, unit.team, unit.hp, unit.org,  unit.status,
-            unit.position.x, unit.position.y, unit.rotation, unit.accumulatedMovement]; // ignore effects for now
-        // console.log(unitData);
-        unitsData[unit.id] = unitData;
-    }
+    let units = clientGame.units;
+    console.log(units)
+
+    return units;
+
+    // let unitsData = new Array(100);
+    // unitsData.fill(new Array(10).fill(0))
+    // // console.log(clientGame.units);
+    // for (const [, unit] of clientGame.units) {
+    //     let unitData = [unit.gold, unit.manpower, unit.team, unit.hp, unit.org,  unit.status,
+    //         unit.position.x, unit.position.y, unit.rotation, unit.accumulatedMovement]; // ignore effects for now
+    //     // console.log(unitData);
+    //     unitsData[unit.id] = unitData;
+    // }
     // unitsData = unitsData.map(x => (x === undefined ? 0 : x)); // fill empty array positions with zeroes
     
     
@@ -86,9 +99,9 @@ function processState() {
     // status  1  = standing, 2 = routing, 3 = recovering
     
 
-    objectives = clientGame.objectives;
-    maxTurn = clientGame.maxTurn;
-    turnNumber = clientGame.turnNumber;
+    // objectives = clientGame.objectives;
+    // maxTurn = clientGame.maxTurn;
+    // turnNumber = clientGame.turnNumber;
 }
 
 /** Retrieve the main game object */

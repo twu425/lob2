@@ -35,12 +35,14 @@ def handle_game_state(data):
     id = data["id"]
     game_state = data["game_state"]
     print("State received from client " + id)
-    print("\t" + game_state)
+    print(game_state[1])
+    # print(type(game_state))
     print("Sending orders to: " + id)
     socketio.emit("orders", "Orders placeholder")
 
 # def sendOrders():
-    
+    # def send 
+
 
 if __name__ == "__main__":
-    socketio.run(app, port=8000)
+    socketio.run(app, port=8000, debug=True)
