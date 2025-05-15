@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, send_from_directory
 from flask_socketio import SocketIO
 import logging
+from bidict import bidict
 import json
 import os
+import torch
 
 # Set the flask app to serves static files from the serverFiles directory
 app = Flask(__name__, static_folder="serverFiles", static_url_path="") 
@@ -12,6 +14,15 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
+orderTypes = bidict({
+    1 : "Move",
+    2 : "Seek",
+    3 : "Shoot",
+    4 : "FireAndAdvance",
+    5 : "PlaceEntity",
+    6 : "Fallback",
+    7 : "Skirmish"
+})
 
 # Route the index.html file
 @app.route('/')
@@ -24,8 +35,7 @@ def index():
 connected_clients = set() 
 
 @socketio.on("client_connect")
-def handle_connect(data):
-    id = data
+def handle_connect(id):
     connected_clients.add(id)
     print("Client connected: " + id)
 
@@ -35,25 +45,30 @@ def handle_game_state(data):
     id = data["id"]
     print("State received from client " + id)
 
-    tranform_data(data)
+    orders = make_orders(data)
 
     print("Sending orders to: " + id)
-    socketio.emit("orders", "Orders placeholder")
+    socketio.emit("orders", orders)
 
 
 # Utility Functions
 
 def tranform_data(data):
     id = data["id"]
-    heightMap = data["heightMap"]
-    terrains = data["terrains"]
-    mapDimensions = data["mapDimensions"]
-    units = data["units"]
-    objectives = data["objectives"]
+    heightMap = data["heightMap"] # 2D array
+    terrains = data["terrains"] # 2D array
+    mapDimensions = data["mapDimensions"] # [height, width]
+    units = data["units"] # {key : unitObject}
+    objectives = data["objectives"] # {key : }
     maxTurn = data["maxTurn"]
     turnNumber = data["turnNumber"]
 
-    
+def make_orders(data):
+    orders = [orderTypes.get("Move")]
+    # {unitnumber : {type:int, id:int, path:[16[2]]}}
+    order = {"type": 1, "id": 1, "path": [[200,200]]}
+    orders = {1: order}
+    return orders
 
 
 if __name__ == "__main__":

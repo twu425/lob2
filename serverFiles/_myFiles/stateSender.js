@@ -19,14 +19,17 @@ function sendGameState() {
         heightMap: clientGame.map.heightMap,
         terrains: clientGame.map.terrains,
         mapDimensions: [clientGame.map.height, clientGame.map.width],
-        units: [...clientGame.units], // Convert map to array so it can be sent
-        objectives: [...clientGame.objectives],
+        // Convert maps to objects, which get converted to dictionaries when received in python
+        units: Object.fromEntries(clientGame.units), 
+        objectives: Object.fromEntries(clientGame.objectives),
         maxTurn: clientGame.maxTurn,
         turnNumber: clientGame.turnNumber
-    });
+    })
 }
 
 socket.on('orders', function (data) {
+    let orders = new Map(Object.entries(data))
+    param.orderMaker.orders = orders;
     console.log("Received orders")
     console.log(data)
 })
@@ -60,8 +63,12 @@ let param;
 export function getSubmitFunction(submitFunction1, param1) {
     submitFunction = submitFunction1;
     param = param1;
+    console.log(param.orderMaker.orders)
+    // orders = param.orderMaker.orders
+    // orders is a map {unitnumber : {type:int, id:int, path:[16[2]]}}
     // console.log(param)
     // submitFunction(param);
+
 }
 
 // Orders
@@ -115,8 +122,10 @@ function run() {
 window.start = start;
 window.run = run;
 
-
-
+// function renderPaths() {
+//     clientGame.orderMaker.renderPathForUnit(u, y, i))
+// }
+// window.renderPaths = renderPaths;
 
 function test1() {
     
