@@ -1,40 +1,30 @@
 import { exampleState } from "/_myFiles/demoStates.js";
-/* global io */ 
-
-let mapData;
-// let units;
-let objectives;
-
-let vpDifference = 0;
-let playerNumber = 1;
-
-let game; // Object, LP, contains and can modify game state
-let clientGame
-let initUnits;  
-
-
-let testmap = new Map([
-    ["apples", 500],
-    ["bananas", 300],
-    ["oranges", 200]
-]);
-
-let id = crypto.randomUUID();;
+/* global io */
 const socket = io("http://localhost:8000");
 
-function sendGameState() {
-    console.log(testmap)
-    socket.emit("game_state", {
-        id: id,
-        game_state: [...clientGame.units] // Convert map to array so it can be sent
-    });
-    // socket.emit("game_state", test);
-}
+
+let id = crypto.randomUUID();;
+let playerNumber = 1;
+let game; // Object, LP, contains and can modify game state
+let clientGame;
 
 socket.on('connect', function () {
     console.log("Connected to server, client id is: " + id);
     socket.emit('client_connect', id);
 });
+
+function sendGameState() {
+    socket.emit("game_state", {
+        id: id,
+        heightMap: clientGame.map.heightMap,
+        terrains: clientGame.map.terrains,
+        mapDimensions: [clientGame.map.height, clientGame.map.width],
+        units: [...clientGame.units], // Convert map to array so it can be sent
+        objectives: [...clientGame.objectives],
+        maxTurn: clientGame.maxTurn,
+        turnNumber: clientGame.turnNumber
+    });
+}
 
 socket.on('orders', function (data) {
     console.log("Received orders")
@@ -42,82 +32,15 @@ socket.on('orders', function (data) {
 })
 
 
-
 /** Update game state with client-side game object */
 export function getClientData(clientGameData) {
     clientGame = clientGameData;
-    // let state = clientGame.getState(); // Object, DC, shows game state
-}
-
-function processState() {
-    // console.log(tf)
-    // let state = clientGame.units; // Object, DC, shows game state
-    // All of these are stored as a map
-    let heightMap = clientGame.getState().map.heightMap; // 88*72 array
-    let terrains = clientGame.getState().map.terrains;
-    let units = clientGame.units;
-    console.log(units)
-
-    return units;
-
-    // let unitsData = new Array(100);
-    // unitsData.fill(new Array(10).fill(0))
-    // // console.log(clientGame.units);
-    // for (const [, unit] of clientGame.units) {
-    //     let unitData = [unit.gold, unit.manpower, unit.team, unit.hp, unit.org,  unit.status,
-    //         unit.position.x, unit.position.y, unit.rotation, unit.accumulatedMovement]; // ignore effects for now
-    //     // console.log(unitData);
-    //     unitsData[unit.id] = unitData;
-    // }
-    // unitsData = unitsData.map(x => (x === undefined ? 0 : x)); // fill empty array positions with zeroes
-    
-    
-
-    // const unitsTensor = tf.tensor2d(unitsData).flatten();        // Shape: [1000] (100 * 10)
-    // const heightMapTensor = tf.tensor2d(heightMap).flatten();    // Shape: [6336] (88 * 72)
-    // const terrainsTensor = tf.tensor2d(terrains).flatten();      // Shape: [6336] (88 * 72)
-
-    // // Concatenate along the first axis (1D)
-    // const inputTensor = tf.concat([unitsTensor, heightMapTensor, terrainsTensor]);
-
-    // console.log(inputTensor);  // Should print [13672]
-    // inputTensor.print();
-
-
-    // effects
-    // hp
-    // position
-    // org
-    // id
-    // player and team
-    // category (likely cav, inf, and arty)
-    // template (how to determine unit type? we could use gold and manpower cost I guess)
-    // effects (likely slowdown and whatnot)
-    // accumulated movement (likely charge damage)
-    // rotation
-    // velocity 
-    // status  1  = standing, 2 = routing, 3 = recovering
-    
-
-    // objectives = clientGame.objectives;
-    // maxTurn = clientGame.maxTurn;
-    // turnNumber = clientGame.turnNumber;
 }
 
 /** Retrieve the main game object */
 export function getGame(gameData) {
     game = gameData;
 }
-
-
-
-
-/** Update units */
-export function updateUnits(unitData) {
-    units = unitData;
-    vpDifference = game.vpService.getVictoryPointDifference(playerNumber);
-}
-
 
 export function handleDefeat() {
     game.turnNumber = 1;
@@ -196,14 +119,11 @@ window.run = run;
 
 
 function test1() {
-    processState();
+    
 }
 
 function test2() {
     sendGameState() 
-    // console.log(game.getState())
-    // const i = this.createUnits(game.units);
-    // this.addUnit(...i);
 }
 window.test1 = test1;
 window.test2 = test2;

@@ -33,15 +33,27 @@ def handle_connect(data):
 @socketio.on("game_state")
 def handle_game_state(data):
     id = data["id"]
-    game_state = data["game_state"]
     print("State received from client " + id)
-    print(game_state[1])
-    # print(type(game_state))
+
+    tranform_data(data)
+
     print("Sending orders to: " + id)
     socketio.emit("orders", "Orders placeholder")
 
-# def sendOrders():
-    # def send 
+
+# Utility Functions
+
+def tranform_data(data):
+    id = data["id"]
+    heightMap = data["heightMap"]
+    terrains = data["terrains"]
+    mapDimensions = data["mapDimensions"]
+    units = data["units"]
+    objectives = data["objectives"]
+    maxTurn = data["maxTurn"]
+    turnNumber = data["turnNumber"]
+
+    
 
 
 if __name__ == "__main__":
