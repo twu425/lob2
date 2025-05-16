@@ -132,6 +132,7 @@ function test1() {
 }
 
 function test2() {
+    // clientGame = exampleState;
     sendGameState() 
 }
 window.test1 = test1;

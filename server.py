@@ -4,7 +4,8 @@ import logging
 from bidict import bidict
 import json
 import os
-import torch
+import torch as torch
+import numpy as np
 
 # Set the flask app to serves static files from the serverFiles directory
 app = Flask(__name__, static_folder="serverFiles", static_url_path="") 
@@ -46,6 +47,7 @@ def handle_game_state(data):
     print("State received from client " + id)
 
     orders = make_orders(data)
+    tranform_data(data)
 
     print("Sending orders to: " + id)
     socketio.emit("orders", orders)
@@ -62,6 +64,34 @@ def tranform_data(data):
     objectives = data["objectives"] # {key : }
     maxTurn = data["maxTurn"]
     turnNumber = data["turnNumber"]
+
+    unitData = []
+    units = units["1"]
+    torch.zeros(20)
+    for unit in units:
+        unitData.append(unit["id"])
+        unitData.append(unit["position"]["x"])
+        unitData.append(unit["position"]["y"])
+        unitData.append(unit["position"]["rotation"])
+        unitData.append(unit["player"])
+        unitData.append(unit["hp"])
+        unitData.append(unit["org"])
+        unitData.append(unit["status"])
+        unitData.append(unit[""])
+        # checks
+        
+
+
+
+    x = torch.tensor(heightMap)
+    x = torch.flatten(x)
+    print(units["1"])
+    
+    
+    print(x)
+
+
+
 
 def make_orders(data):
     orders = [orderTypes.get("Move")]
