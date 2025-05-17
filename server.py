@@ -43,23 +43,54 @@ def handle_connect(id):
     print("Client connected: " + id)
 
 
-# Private
+max_units = 100
+unit_parameters = 9
+# Persistent agent and state tracking
+agent = Commander(
+    gamma=0.99,
+    epsilon=1.0,
+    learning_rate=1e-3,
+    input_dimensions=max_units * unit_parameters,  # or adjust as needed
+    action_dimensions=unit_parameters
+)
+prev_state = None
+prev_action = None
+prev_reward = None
+
 @socketio.on("game_state")
 def handle_game_state(state):
+    global prev_state, prev_action, prev_reward
+
     id = state["id"]
     print("State received from client " + id)
 
-    orders = make_orders()
-    # unit_tensor = transform_data(data)
-    # train(state)
+    # Transform state to tensor
+    state_tensor = transform_data(state).flatten().numpy()  # flatten for 1D input
+
+    # Choose action using the agent
+    action = agent.act(state_tensor)
+
+    # If this is not the first step, store the transition
+    if prev_state is not None and prev_action is not None and prev_reward is not None:
+        agent.cache((prev_state, prev_action, prev_reward, state_tensor, False))
+        agent.learn()
+
+    # Prepare orders to send to client (you may want to decode 'action' to your order format)
+    orders = make_orders(action)
+    print(type(action))
+
+    prev_state = state_tensor
+    prev_action = action
+    prev_reward = state["victoryPointsDifference"]  # or whatever reward signal you want
 
     print("Sending orders to: " + id)
     socketio.emit("orders", orders)
 
+    # Update previous state/action/reward for next step
 
-# Utility Functions
-max_units = 100
-unit_parameters = 9
+
+
+
 
 
 
@@ -98,40 +129,40 @@ def transform_data(state):
     return unit_tensor # TODO: Make this show the entire game state, not just the victory points
 
 
-def make_orders(data):
-    orders = [orderTypes.get("Move")]
-    # {unitnumber : {type:int, id:int, path:[16[2]]}}
-    order = {"type": 1, "id": 1, "path": [[200,200]]}
+def make_orders(action):
+    # Example: convert action index to order dict
+    # You should adapt this to your game's action space
+    order = {"type": 1, "id": 1, "path": [[200, 200]]}
     orders = {1: order}
     return orders
 
 
-def train(state):
-    victoryPointDifference = state["victoryPointDifference"]
-    state_tensor = transform_data(state)
+# def train(state):
+#     victoryPointDifference = state["victoryPointDifference"]
+#     state_tensor = transform_data(state)
 
-    agent = Commander(gamma=0.99, epsilon=1.0, learning_rate=1e-3, input_dimensions=state_tensor.shape[0], action_dimensions=unit_parameters)
-    num_episodes = 1000
-    target_update_freq = 10
+#     agent = Commander(gamma=0.99, epsilon=1.0, learning_rate=1e-3, input_dimensions=state_tensor.shape[0], action_dimensions=unit_parameters)
+#     num_episodes = 1000
+#     target_update_freq = 10
 
 
-    for episode in range(num_episodes):
-        socketio.emit('reset')
-        done = False
-        while not done:
-            action = agent.act(state)
+#     for episode in range(num_episodes):
+#         socketio.emit('reset')
+#         done = False
+#         while not done:
+#             action = agent.act(state)
 
-            socketio.emit("orders", action)
+#             socketio.emit("orders", action)
             
-            reward = victoryPointDifference
-            done = False
+#             reward = victoryPointDifference
+#             done = False
             
-            agent.cache((state, action, reward, next_state, done))
-            agent.learn()
-            state = next_state
-        if episode % target_update_freq == 0:
-            agent.update_target_network()
-        print(f"Episode {episode} complete, epsilon: {agent.epsilon}")
+#             agent.cache((state, action, reward, next_state, done))
+#             agent.learn()
+#             state = next_state
+#         if episode % target_update_freq == 0:
+#             agent.update_target_network()
+#         print(f"Episode {episode} complete, epsilon: {agent.epsilon}")
 
 
 if __name__ == "__main__":
