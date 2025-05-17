@@ -7,6 +7,8 @@ import os
 import torch as torch
 import numpy as np
 
+from test import Commander
+
 # Set the flask app to serves static files from the serverFiles directory
 app = Flask(__name__, static_folder="serverFiles", static_url_path="") 
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -40,57 +42,60 @@ def handle_connect(id):
     connected_clients.add(id)
     print("Client connected: " + id)
 
+
 # Private
 @socketio.on("game_state")
-def handle_game_state(data):
-    id = data["id"]
+def handle_game_state(state):
+    id = state["id"]
     print("State received from client " + id)
 
-    orders = make_orders(data)
-    tranform_data(data)
+    orders = make_orders()
+    # unit_tensor = transform_data(data)
+    # train(state)
 
     print("Sending orders to: " + id)
     socketio.emit("orders", orders)
 
 
 # Utility Functions
+max_units = 100
+unit_parameters = 9
 
-def tranform_data(data):
-    id = data["id"]
-    heightMap = data["heightMap"] # 2D array
-    terrains = data["terrains"] # 2D array
-    mapDimensions = data["mapDimensions"] # [height, width]
-    units = data["units"] # {key : unitObject}
-    objectives = data["objectives"] # {key : }
-    maxTurn = data["maxTurn"]
-    turnNumber = data["turnNumber"]
 
-    unitData = []
-    units = units["1"]
-    torch.zeros(20)
-    for unit in units:
+
+def transform_data(state):
+    id = state["id"]
+    heightMap = state["heightMap"] # 2D array
+    terrains = state["terrains"] # 2D array
+    mapDimensions = state["mapDimensions"] # [height, width]
+    units = state["units"] # {key : unitObject}
+    objectives = state["objectives"] # {key : }
+    maxTurn = state["maxTurn"]
+    turnNumber = state["turnNumber"]
+    victoryPointsDifference = state["victoryPointsDifference"]
+
+    #units = units["1"]
+    # map_tensor = torch.zeros()
+
+    unit_tensor = torch.zeros(max_units, unit_parameters)
+    
+    index = 0
+    for unit in units.values():        
+        unitData = []
         unitData.append(unit["id"])
         unitData.append(unit["position"]["x"])
         unitData.append(unit["position"]["y"])
-        unitData.append(unit["position"]["rotation"])
-        unitData.append(unit["player"])
+        unitData.append(unit["rotation"])
+        unitData.append(unit["player"]) # maybe also get team?
         unitData.append(unit["hp"])
         unitData.append(unit["org"])
         unitData.append(unit["status"])
-        unitData.append(unit[""])
-        # checks
-        
+        unitData.append(unit["accumulatedMovement"]) 
 
+        unit_tensor[index] = torch.tensor(unitData)
+        index += 1
 
-
-    x = torch.tensor(heightMap)
-    x = torch.flatten(x)
-    print(units["1"])
-    
-    
-    print(x)
-
-
+    return unit_tensor # TODO: Make this show the entire game state, not just the victory points
 
 
 def make_orders(data):
@@ -99,6 +104,34 @@ def make_orders(data):
     order = {"type": 1, "id": 1, "path": [[200,200]]}
     orders = {1: order}
     return orders
+
+
+def train(state):
+    victoryPointDifference = state["victoryPointDifference"]
+    state_tensor = transform_data(state)
+
+    agent = Commander(gamma=0.99, epsilon=1.0, learning_rate=1e-3, input_dimensions=state_tensor.shape[0], action_dimensions=unit_parameters)
+    num_episodes = 1000
+    target_update_freq = 10
+
+
+    for episode in range(num_episodes):
+        socketio.emit('reset')
+        done = False
+        while not done:
+            action = agent.act(state)
+
+            socketio.emit("orders", action)
+            
+            reward = victoryPointDifference
+            done = False
+            
+            agent.cache((state, action, reward, next_state, done))
+            agent.learn()
+            state = next_state
+        if episode % target_update_freq == 0:
+            agent.update_target_network()
+        print(f"Episode {episode} complete, epsilon: {agent.epsilon}")
 
 
 if __name__ == "__main__":

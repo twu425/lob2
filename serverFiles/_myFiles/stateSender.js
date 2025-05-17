@@ -4,7 +4,6 @@ const socket = io("http://localhost:8000");
 
 
 let id = crypto.randomUUID();;
-let playerNumber = 1;
 let game; // Object, LP, contains and can modify game state
 let clientGame;
 
@@ -12,6 +11,8 @@ socket.on('connect', function () {
     console.log("Connected to server, client id is: " + id);
     socket.emit('client_connect', id);
 });
+
+socket.on('reset', resetGame)
 
 function sendGameState() {
     socket.emit("game_state", {
@@ -23,15 +24,20 @@ function sendGameState() {
         units: Object.fromEntries(clientGame.units), 
         objectives: Object.fromEntries(clientGame.objectives),
         maxTurn: clientGame.maxTurn,
-        turnNumber: clientGame.turnNumber
+        turnNumber: clientGame.turnNumber,
+        victoryPointsDifference: clientGame.vpService.getVictoryPointDifference(1) // 1 stands for player 1
     })
 }
+
+socket.on('sendGameState', sendGameState)
 
 socket.on('orders', function (data) {
     let orders = new Map(Object.entries(data))
     param.orderMaker.orders = orders;
     console.log("Received orders")
     console.log(data)
+    gameStep()
+    sendGameState()
 })
 
 
@@ -99,7 +105,7 @@ function gameLoop() {
     // console.log(game.unitData)
 
     submitFunction(param);
-    console.log(param);
+    // console.log(param);
 
 
     let timeEnd = Date.now()
@@ -108,6 +114,13 @@ function gameLoop() {
     // Schedule the next loop
     // Necessary to use this instead of calling directly because it allows the call stack to to clear
     setTimeout(gameLoop, 0);
+}
+
+function gameStep() {
+    if (game.turnNumber == game.maxTurn - 1) {
+        resetGame();
+    }
+    submitFunction(param);
 }
 
 function start() {
