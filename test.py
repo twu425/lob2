@@ -69,13 +69,13 @@ class Commander:
         self.update_target_network()
 
     def act(self, state):
-        """Given a state, choose an epsilon-greedy action"""
-        if np.random.rand() < self.epsilon:
-            return np.random.randint(self.action_dimensions)
         state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0).to(self.q_network.device)
         with torch.no_grad():
-            q_values = self.q_network(state_tensor)
-        return torch.argmax(q_values).item()
+            actions = self.q_network(state_tensor).squeeze(0).cpu().numpy()  # shape: (9,)
+        # Optionally add exploration noise here, e.g.:
+        if np.random.rand() < self.epsilon:
+            actions += np.random.normal(0, 0.1, size=actions.shape)
+        return actions.tolist()
 
     def cache(self, experience):
         """Add the experience to memory"""
