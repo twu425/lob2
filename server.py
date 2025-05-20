@@ -105,34 +105,5 @@ def make_orders(data):
     orders = {1: order}
     return orders
 
-
-def train(state):
-    victoryPointDifference = state["victoryPointDifference"]
-    state_tensor = transform_data(state)
-
-    agent = Commander(gamma=0.99, epsilon=1.0, learning_rate=1e-3, input_dimensions=state_tensor.shape[0], action_dimensions=unit_parameters)
-    num_episodes = 1000
-    target_update_freq = 10
-
-
-    for episode in range(num_episodes):
-        socketio.emit('reset')
-        done = False
-        while not done:
-            action = agent.act(state)
-
-            socketio.emit("orders", action)
-            
-            reward = victoryPointDifference
-            done = False
-            
-            agent.cache((state, action, reward, next_state, done))
-            agent.learn()
-            state = next_state
-        if episode % target_update_freq == 0:
-            agent.update_target_network()
-        print(f"Episode {episode} complete, epsilon: {agent.epsilon}")
-
-
 if __name__ == "__main__":
     socketio.run(app, port=8000, debug=True)
