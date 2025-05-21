@@ -1,12 +1,9 @@
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask
 from flask_socketio import SocketIO
 import logging
 from bidict import bidict
-import json
-import os
 import torch as torch
 import numpy as np
-import threading
 from environment import battleField
 
 # Set the flask app to serves static files from the serverFiles directory
@@ -17,16 +14,6 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-orderTypes = bidict({
-    1 : "Move",
-    2 : "Seek",
-    3 : "Shoot",
-    4 : "FireAndAdvance",
-    5 : "PlaceEntity",
-    6 : "Fallback",
-    7 : "Skirmish"
-})
-
 # Route the index.html file
 @app.route('/')
 def index():
@@ -34,48 +21,39 @@ def index():
 
 
 # Signals
-
 connected_clients = set() 
 
+# Register client
+# TODO: Add handling for multiple clients
 @socketio.on("client_connect")
 def handle_connect(id):
     connected_clients.add(id)
     print("Client connected: " + id)    
 
-
-
+# Start game loop
 environment = battleField(socketio)
 @socketio.on("start") 
 def start():
     while True:
         environment.step(action=None)
 
-
-
-# Private
+# Receive game state
 @socketio.on("game_state")
 def handle_game_state(state):
     id = state["id"]
     print("State received from client " + id)
 
-    
     unit_tensor = transform_data(state)
     reward = 0 # temp
     done = False # temp
     environment.on_client_step_response(unit_tensor, reward, done)
 
-    # train(state)
-
-    # print("Sending orders to: " + id)
-    # socketio.emit("orders", orders)
-
-
-# Utility Functions
+# TOCO: Move transform data function into battleField class to avoid duplicated parameters
 max_units = 100
 unit_parameters = 9
 
-
-
+# Turn state data into a tensor
+# TODO: add non-unit data as well
 def transform_data(state):
     id = state["id"]
     heightMap = state["heightMap"] # 2D array
@@ -108,7 +86,7 @@ def transform_data(state):
         unit_tensor[index] = torch.tensor(unitData)
         index += 1
 
-    return unit_tensor # TODO: Make this show the entire game state, not just the victory points
+    return unit_tensor 
 
 
 if __name__ == "__main__":

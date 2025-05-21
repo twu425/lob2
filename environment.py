@@ -2,6 +2,7 @@ import gymnasium as gym
 import torch as torch
 import numpy as np
 import threading
+import bidict
 
 class battleField(gym.Env):
     def __init__(self, socketio):
@@ -56,8 +57,20 @@ class battleField(gym.Env):
         # self._last_info = info
         self._step_event.set()
 
+
+# Make dummy orders
 def make_orders():
     # {unitnumber : {type:int, id:int, path:[16[2]]}}
     order = {"type": 1, "id": 1, "path": [[200,200]]}
     orders = {1: order}
     return orders
+
+orderTypes = bidict({
+    1 : "Move",
+    2 : "Seek",
+    3 : "Shoot",
+    4 : "FireAndAdvance",
+    5 : "PlaceEntity",
+    6 : "Fallback",
+    7 : "Skirmish"
+})
