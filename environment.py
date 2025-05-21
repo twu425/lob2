@@ -56,6 +56,8 @@ class battleField(gym.Env):
         # self._last_info = info
         self._step_event.set()
 
+
+# Make dummy orders
 def make_orders():
     # {unitnumber : {type:int, id:int, path:[16[2]]}}
     order = {"type": 1, "id": 1, "path": [[200,200]]}
