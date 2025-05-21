@@ -150,7 +150,10 @@ function test2() {
 }
 window.test1 = test1;
 window.test2 = test2;
-
+function test3() {
+    socket.emit("start")
+} 
+window.test3 = test3
 
 // This is similar to the submit function, but doesn't render (probably has less overhead)
 // It also doesn't really work, the submit button bundles in some other functions that make it functional it appears
