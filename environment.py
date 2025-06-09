@@ -65,7 +65,7 @@ def make_orders():
     orders = {1: order}
     return orders
 
-orderTypes = bidict({
+orderTypes = bidict.bidict({
     1 : "Move",
     2 : "Seek",
     3 : "Shoot",
